@@ -1,5 +1,7 @@
 const client = require("./client");
 
+const { mapTheRows } = require("./utils")
+
 const { attachActivitiesToRoutines } = require("./activities")
 
 async function createRoutine({ creatorId, isPublic, name, goal }) {
@@ -37,18 +39,21 @@ async function getAllRoutines() {
   try {
     const { rows } = await client.query(`
     SELECT 
-
- routines.id AS id,
- user.id AS “creatorId”,
- routines.”isPublic” AS “isPublic”,
- routines.name AS name,
- Routines.goal AS goal 
-
-FROM routines
-LEFT JOIN users ON routines."creatorId" = users.id
-LEFT JOIN tricks ON puppies_tricks.trick_id = tricks.id
+        routines.id AS id,
+        users.id AS "creatorId",
+        users.username AS "creatorName",
+        routines."isPublic" AS "isPublic",
+        routines.name AS name,
+        routines.goal AS goal,
+        activities.id AS "activitiesId",
+        routine_activities.count AS "activityCount",
+        routine_activities.duration AS "activityDuration"
+    FROM routines
+    LEFT JOIN users ON routines."creatorId" = users.id
+    LEFT JOIN routine_activities ON routines.id = routine_activities."routineId"
+    LEFT JOIN activities ON routine_activities."activityId" = activities.id
     `);
-    return rows;
+    return mapTheRows(rows);
   } catch (error) {
     throw error;
   }
