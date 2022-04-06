@@ -19,6 +19,20 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
   }
 }
 
+async function getRoutinesWithoutActivities() {
+  try {
+    const { rows } = await client.query(
+      `SELECT *
+          FROM routines
+        `
+    );
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   createRoutine,
+  getRoutinesWithoutActivities,
 };
