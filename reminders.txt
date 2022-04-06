@@ -1,0 +1,4 @@
+Extra Credit: Hashing passwords
+Activities: require logged in to post(?)
+Routines: (on the front-end): Have option to toggle to "public"
+Routines (on the back-end): Need getRoutinesById function?
