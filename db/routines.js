@@ -36,8 +36,17 @@ async function getRoutinesWithoutActivities() {
 async function getAllRoutines() {
   try {
     const { rows } = await client.query(`
-    SELECT *
-    FROM routines
+    SELECT 
+
+ routines.id AS id,
+ user.id AS “creatorId”,
+ routines.”isPublic” AS “isPublic”,
+ routines.name AS name,
+ Routines.goal AS goal 
+
+FROM routines
+LEFT JOIN users ON routines."creatorId" = users.id
+LEFT JOIN tricks ON puppies_tricks.trick_id = tricks.id
     `);
     return rows;
   } catch (error) {
@@ -45,6 +54,17 @@ async function getAllRoutines() {
   }
 }
 
+
+
+        
+
+
+
+
+
+
+
+      
 module.exports = {
   createRoutine,
   getRoutinesWithoutActivities,
