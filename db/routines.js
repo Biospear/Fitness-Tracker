@@ -53,7 +53,7 @@ async function getAllRoutines() {
     LEFT JOIN routine_activities ON routines.id = routine_activities."routineId"
     LEFT JOIN activities ON routine_activities."activityId" = activities.id
     `);
-    return mapTheRows(rows);
+    return attachActivitiesToRoutines(rows);
   } catch (error) {
     throw error;
   }
