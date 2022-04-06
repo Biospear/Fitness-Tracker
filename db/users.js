@@ -19,13 +19,13 @@ async function createUser({ username, password }) {
   }
 }
 
-async function getUser({username,password}) {
+async function getUser({username, password}) {
   try{
-    const { row } = await client.query(`
+    const { rows } = await client.query(`
     SELECT username
-   FROM users
+    FROM users
     WHERE username = $1
-    WHERE password = $2
+    AND password = $2
   `, [username, password]);
 
   return row;
@@ -37,16 +37,15 @@ async function getUser({username,password}) {
 }
 
 
-async function getUserByUserId({userId}){
+async function getUserById(userId){
   try{
-        const { row } = await client.query(`
-      SELECT id, username
+        const { rows } = await client.query(`
+      SELECT id, username, password
       FROM users
-      WHERE id= ${userId}
-    `);
- console.log ("getUserByUserId",row)
-    return row;
+      WHERE id=$1
+    `, [userId]);
 
+    return rows;
   }catch(error){
       throw error 
   }
@@ -55,5 +54,5 @@ async function getUserByUserId({userId}){
 module.exports = {
   createUser,
   getUser,
-  getUserByUserId,
+  getUserById,
 };
