@@ -1,5 +1,7 @@
 const client = require("./client");
 
+const { attachActivitiesToRoutines } = require("./activities")
+
 async function createRoutine({ creatorId, isPublic, name, goal }) {
   try {
     const {
@@ -21,11 +23,22 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
 
 async function getRoutinesWithoutActivities() {
   try {
-    const { rows } = await client.query(
-      `SELECT *
-          FROM routines
-        `
-    );
+    const { rows } = await client.query(`
+      SELECT *
+      FROM routines
+      `);
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getAllRoutines() {
+  try {
+    const { rows } = await client.query(`
+    SELECT *
+    FROM routines
+    `);
     return rows;
   } catch (error) {
     throw error;
@@ -35,4 +48,5 @@ async function getRoutinesWithoutActivities() {
 module.exports = {
   createRoutine,
   getRoutinesWithoutActivities,
+  getAllRoutines,
 };
