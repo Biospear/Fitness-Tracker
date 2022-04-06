@@ -19,6 +19,21 @@ async function createActivity({ name, description }) {
   }
 }
 
+async function getAllActivities() {
+    try {
+        const { rows } = await client.query(
+          `SELECT *
+          FROM activities;
+        `
+        );
+    
+        return rows;
+      } catch (error) {
+        throw error;
+      }
+}
+
 module.exports = {
   createActivity,
+  getAllActivities,
 };
