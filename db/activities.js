@@ -77,7 +77,11 @@ async function getActivityById(activityId){
     try {
       // get the activities, JOIN with routine_activities (so we can get a routineId), and only those that have those routine ids on the routine_activities join
       const { rows: activities } = await client.query(`
-        SELECT activities.*, routine_activities.duration, routine_activities.count, routine_activities.id AS "routineActivityId", routine_activities."routineId"
+        SELECT activities.*,
+        routine_activities.duration,
+        routine_activities.count,
+        routine_activities.id AS "routineActivityId",
+        routine_activities."routineId"
         FROM activities 
         JOIN routine_activities ON routine_activities."activityId" = activities.id
         WHERE routine_activities."routineId" IN (${ binds });
