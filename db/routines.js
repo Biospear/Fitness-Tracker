@@ -59,6 +59,30 @@ async function getAllRoutines() {
   }
 }
 
+async function getAllPublicRoutines() {
+  try {
+    const { rows } = await client.query(`
+    SELECT 
+        routines.id AS id,
+        users.id AS "creatorId",
+        users.username AS "creatorName",
+        routines."isPublic" AS "isPublic",
+        routines.name AS name,
+        routines.goal AS goal,
+        activities.id AS "activitiesId",
+        routine_activities.count AS "activityCount",
+        routine_activities.duration AS "activityDuration"
+    FROM routines
+    LEFT JOIN users ON routines."creatorId" = users.id
+    LEFT JOIN routine_activities ON routines.id = routine_activities."routineId"
+    LEFT JOIN activities ON routine_activities."activityId" = activities.id
+    WHERE routines."isPublic"=true
+    `);
+    return attachActivitiesToRoutines(rows);
+  } catch (error) {
+    throw error;
+  }
+}
 
 
         
@@ -74,4 +98,5 @@ module.exports = {
   createRoutine,
   getRoutinesWithoutActivities,
   getAllRoutines,
+  getAllPublicRoutines,
 };
