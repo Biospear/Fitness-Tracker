@@ -190,6 +190,58 @@ async function getPublicRoutinesByUser(user) {
     }
   }
 
+
+  async function updateRoutine({ id, isPublic, name, goal}) {
+   
+    try{
+      const {
+        rows: [routine],
+       } = await client.query(
+         `
+         UPDATE routines
+         SET "isPublic"=$2,
+          name=$3,
+          goal=$4
+         WHERE id=$1
+             RETURNING *;
+             `,
+         [id, isPublic, name, goal]
+       );
+   
+       return routine;
+     
+      } catch (error) {
+        throw error;
+      }
+  }
+    
+
+
+
+
+
+
+  
+ async function destroyRoutine(id){
+   try{
+   await client.query(`
+    DELETE 
+    FROM routines
+    WHERE id=$1;
+    DELETE 
+    FROM routine_activites
+    WHERE "routineId"=$1
+    `, [id])
+   
+   }catch(error){
+     throw error;
+   }
+
+ }
+  
+
+
+
 module.exports = {
   createRoutine,
   getRoutinesWithoutActivities,
@@ -199,4 +251,6 @@ module.exports = {
   getAllRoutinesByUser,
   getPublicRoutinesByUser,
   getPublicRoutinesByActivity,
+  updateRoutine,
+  destroyRoutine,
 };
