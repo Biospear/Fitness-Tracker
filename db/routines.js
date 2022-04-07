@@ -85,9 +85,6 @@ async function getAllPublicRoutines() {
 }
 
 async function getAllRoutinesByUser(user) {
- // console.log(x, "this is your x");
-  
- // console.log(xoh.username);
   try {
     const { rows } = await client.query(
       `
@@ -109,10 +106,8 @@ async function getAllRoutinesByUser(user) {
     AND users.username=$2
     AND users.password=$3
     `,
-    [user[0].id, user[0].username, user[0].password]
+    [user.id, user.username, user.password]
     );
-    console.log (rows)
-    console.log(user) 
     return attachActivitiesToRoutines(rows);
   } catch (error) {
     throw error;

@@ -9,7 +9,7 @@ async function createUser({ username, password }) {
       `
         INSERT INTO users(username, password) 
         VALUES($1, $2)  
-        RETURNING username;
+        RETURNING id, username;
         `,
       [username, password]
     );
@@ -23,7 +23,7 @@ async function createUser({ username, password }) {
 async function getUser({username, password}) {
   try{
     const { rows: [user] } = await client.query(`
-    SELECT username
+    SELECT id, username
     FROM users
     WHERE username = $1
     AND password = $2
@@ -40,13 +40,13 @@ async function getUser({username, password}) {
 
 async function getUserById(userId){
   try{
-        const { rows } = await client.query(`
+        const { rows: [user] } = await client.query(`
       SELECT id, username, password
       FROM users
       WHERE id=$1
     `, [userId]);
 
-    return rows;
+    return user;
   }catch(error){
       throw error 
   }
