@@ -55,13 +55,13 @@ async function updateActivity({ id, name, description }) {
 
 async function getActivityById(activityId){
     try{
-          const { rows } = await client.query(`
+          const { rows: [activity] } = await client.query(`
         SELECT *
         FROM activities
         WHERE id=$1
       `, [activityId]);
   
-      return rows;
+      return activity;
     }catch(error){
         throw error 
     }
