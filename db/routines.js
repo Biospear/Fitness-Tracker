@@ -228,9 +228,12 @@ async function getPublicRoutinesByUser(user) {
     DELETE 
     FROM routines
     WHERE id=$1;
+    `, [id])
+    
+    await client.query(`
     DELETE 
-    FROM routine_activites
-    WHERE "routineId"=$1
+    FROM routine_activities
+    WHERE "routineId"=$1;
     `, [id])
    
    }catch(error){

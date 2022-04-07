@@ -26,7 +26,7 @@ async function addActivityToRoutine({
 async function getRoutineActivitiesByRoutine({id}){
     try {
         const {
-          rows: [routineActivity],
+          rows,
         } = await client.query(`
         SELECT *
         FROM routine_activities
@@ -34,7 +34,7 @@ async function getRoutineActivitiesByRoutine({id}){
         `, [id]
         );
     
-        return routineActivity;
+        return rows;
       } catch (error) {
         throw error;
       }
