@@ -12,8 +12,8 @@ const {
 const {
   createRoutine,
   getRoutinesWithoutActivities,
-  getAllRoutines,
   getRoutineById,
+  getAllRoutines,
   getAllPublicRoutines,
   getAllRoutinesByUser,
   getPublicRoutinesByUser,

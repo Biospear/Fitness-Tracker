@@ -17,7 +17,6 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
       [creatorId, isPublic, name, goal]
     );
 
-    console.log(routine)
     return routine;
   } catch (error) {
     throw error;
@@ -34,6 +33,20 @@ async function getRoutinesWithoutActivities() {
   } catch (error) {
     throw error;
   }
+}
+
+async function getRoutineById(routineId) {
+    try {
+        const { rows: [routine] } = await client.query(`
+        SELECT *
+        FROM routines
+        WHERE routines.id=$1
+        `, [routineId]);
+        
+        return routine;
+      } catch (error) {
+        throw error;
+      }
 }
 
 async function getAllRoutines() {
@@ -59,33 +72,6 @@ async function getAllRoutines() {
     throw error;
   }
 }
-
-//THIS IS NEW NOT TESTED YET
-async function getRoutineById(routineId) {
-    try {
-        const { rows } = await client.query(`
-        SELECT 
-            routines.id AS id,
-            users.id AS "creatorId",
-            users.username AS "creatorName",
-            routines."isPublic" AS "isPublic",
-            routines.name AS name,
-            routines.goal AS goal,
-            activities.id AS "activitiesId",
-            routine_activities.count AS "activityCount",
-            routine_activities.duration AS "activityDuration"
-        FROM routines
-        LEFT JOIN users ON routines."creatorId" = users.id
-        LEFT JOIN routine_activities ON routines.id = routine_activities."routineId"
-        LEFT JOIN activities ON routine_activities."activityId" = activities.id
-        WHERE routines.id=$1
-        `, [routineId]);
-        return attachActivitiesToRoutines(rows);
-      } catch (error) {
-        throw error;
-      }
-}
-//*****
 
 async function getAllPublicRoutines() {
   try {
@@ -174,7 +160,6 @@ async function getPublicRoutinesByUser(user) {
   }
 
   async function getPublicRoutinesByActivity(activity) {
-    console.log(activity)
     try {
       const { rows } = await client.query(
         `
@@ -208,8 +193,8 @@ async function getPublicRoutinesByUser(user) {
 module.exports = {
   createRoutine,
   getRoutinesWithoutActivities,
-  getAllRoutines,
   getRoutineById,
+  getAllRoutines,
   getAllPublicRoutines,
   getAllRoutinesByUser,
   getPublicRoutinesByUser,
