@@ -23,6 +23,25 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
   }
 }
 
+async function getRoutineById(routineId) {
+    try {
+      const {
+        rows: [routine],
+      } = await client.query(
+        `
+          SELECT *
+          FROM routines
+          WHERE routines.id=$1
+          `,
+        [routineId]
+      );
+  
+      return routine;
+    } catch (error) {
+      throw error;
+    }
+}
+
 async function getRoutinesWithoutActivities() {
   try {
     const { rows } = await client.query(`
@@ -33,20 +52,6 @@ async function getRoutinesWithoutActivities() {
   } catch (error) {
     throw error;
   }
-}
-
-async function getRoutineById(routineId) {
-    try {
-        const { rows: [routine] } = await client.query(`
-        SELECT *
-        FROM routines
-        WHERE routines.id=$1
-        `, [routineId]);
-        
-        return routine;
-      } catch (error) {
-        throw error;
-      }
 }
 
 async function getAllRoutines() {
@@ -98,7 +103,7 @@ async function getAllPublicRoutines() {
   }
 }
 
-async function getAllRoutinesByUser(user) {
+async function getAllRoutinesByUser({username}) {
   try {
     const { rows } = await client.query(
       `
@@ -116,11 +121,10 @@ async function getAllRoutinesByUser(user) {
     LEFT JOIN users ON routines."creatorId" = users.id
     LEFT JOIN routine_activities ON routines.id = routine_activities."routineId"
     LEFT JOIN activities ON routine_activities."activityId" = activities.id
-    WHERE users.id=$1
-    AND users.username=$2
-    AND users.password=$3
+    WHERE users.username=$1
+
     `,
-      [user.id, user.username, user.password]
+      [username]
     );
     return attachActivitiesToRoutines(rows);
   } catch (error) {
@@ -128,10 +132,10 @@ async function getAllRoutinesByUser(user) {
   }
 }
 
-async function getPublicRoutinesByUser(user) {
-    try {
-      const { rows } = await client.query(
-        `
+async function getPublicRoutinesByUser({username}) {
+  try {
+    const { rows } = await client.query(
+      `
       SELECT 
           routines.id AS id,
           users.id AS "creatorId",
@@ -146,23 +150,21 @@ async function getPublicRoutinesByUser(user) {
       LEFT JOIN users ON routines."creatorId" = users.id
       LEFT JOIN routine_activities ON routines.id = routine_activities."routineId"
       LEFT JOIN activities ON routine_activities."activityId" = activities.id
-      WHERE users.id=$1
-      AND users.username=$2
-      AND users.password=$3
+      WHERE users.username=$1
       AND routines."isPublic"=true
       `,
-        [user.id, user.username, user.password]
-      );
-      return attachActivitiesToRoutines(rows);
-    } catch (error) {
-      throw error;
-    }
+      [username]
+    );
+    return attachActivitiesToRoutines(rows);
+  } catch (error) {
+    throw error;
   }
+}
 
-  async function getPublicRoutinesByActivity(activity) {
-    try {
-      const { rows } = await client.query(
-        `
+async function getPublicRoutinesByActivity({id}) {
+  try {
+    const { rows } = await client.query(
+      `
       SELECT 
           routines.id AS id,
           users.id AS "creatorId",
@@ -178,72 +180,68 @@ async function getPublicRoutinesByUser(user) {
       LEFT JOIN routine_activities ON routines.id = routine_activities."routineId"
       LEFT JOIN activities ON routine_activities."activityId" = activities.id
       WHERE activities.id=$1
-      AND activities.name=$2
-      AND activities.description=$3
       AND routines."isPublic"=true
       `,
-        [activity.id, activity.name, activity.description]
-      );
-      return attachActivitiesToRoutines(rows);
-    } catch (error) {
-      throw error;
-    }
+      [id]
+    );
+    return attachActivitiesToRoutines(rows);
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function updateRoutine(fields={}) {
+
+const setString = Object.keys(fields)
+.map((key, index) => `"${key}"=$${index + 1}`)
+.join(", ");
+
+  // return early if this is called without fields
+  if (setString.length === 0) {
+    return;
   }
 
+  try {
+    const {
+      rows: [routine],
+    } = await client.query(
+      `
+        UPDATE routines
+        SET ${setString}
+        WHERE id=${fields.id}
+        RETURNING *;
+      `, Object.values(fields)
+    );
 
-  async function updateRoutine({ id, isPublic, name, goal}) {
-   
-    try{
-      const {
-        rows: [routine],
-       } = await client.query(
-         `
-         UPDATE routines
-         SET "isPublic"=$2,
-          name=$3,
-          goal=$4
-         WHERE id=$1
-             RETURNING *;
-             `,
-         [id, isPublic, name, goal]
-       );
-   
-       return routine;
-     
-      } catch (error) {
-        throw error;
-      }
+    return routine;
+  } catch (error) {
+    throw error;
   }
-    
+}
 
-
-
-
-
-
-  
- async function destroyRoutine(id){
-   try{
-   await client.query(`
-    DELETE 
+async function destroyRoutine(id) {
+  try {
+    await client.query(
+      `
+    DELETE
     FROM routines
     WHERE id=$1;
-    `, [id])
-    
-    await client.query(`
-    DELETE 
+    `,
+      [id]
+    );
+
+    await client.query(
+      `
+    DELETE
     FROM routine_activities
     WHERE "routineId"=$1;
-    `, [id])
-   
-   }catch(error){
-     throw error;
-   }
-
- }
-  
-
-
+    `,
+      [id]
+    );
+  } catch (error) {
+    throw error;
+  }
+}
 
 module.exports = {
   createRoutine,
