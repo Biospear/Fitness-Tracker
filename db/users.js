@@ -60,18 +60,19 @@ async function getUserById(userId) {
 }
 
 async function getUserByUsername(username) {
+  console.log(username, "im in get user by username");
   try {
     const {
       rows: [user],
     } = await client.query(
       `
-        SELECT id, username, password
+        SELECT *
         FROM users
         WHERE username=$1
       `,
       [username]
     );
-
+    console.log("this is the last line of defense also here is user", user);
     return user;
   } catch (error) {
     throw error;

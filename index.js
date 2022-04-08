@@ -8,6 +8,11 @@ const apiRouter = require("./api");
 // const morgan = require("morgan");
 // app.use(morgan("dev"));
 // app.use(express.json());
+const bodyParser = require("body-parser");
+
+// Body-parser middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const { PORT = 3000 } = process.env;
 app.use(cors());
