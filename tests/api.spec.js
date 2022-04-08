@@ -51,7 +51,7 @@ describe('API', () => {
       it('Requires username and password. Requires all passwords to be at least 8 characters long.', () => {
         expect(newUser.password.length).toBeGreaterThan(7);
       });
-      it('EXTRA CREDIT: Hashes password before saving user to DB.', async () => {
+      xit('EXTRA CREDIT: Hashes password before saving user to DB.', async () => {
         const {rows: [queriedUser]} = await client.query(`
           SELECT *
           FROM users
@@ -75,7 +75,7 @@ describe('API', () => {
         expect(tooShortResponse.data).toBeTruthy();
       });
     });
-    describe('POST /users/login', () => {
+    xdescribe('POST /users/login', () => {
       it('Logs in the user. Requires username and password, and verifies that hashed login password matches the saved hashed password.', async () => {
         const {data} = await axios.post(`${API_URL}/api/users/login`, newUser);
         token = data.token;
@@ -87,7 +87,7 @@ describe('API', () => {
         expect(parsedToken.username).toEqual(registeredUser.username);
       });
     })
-    describe('GET /users/me', () => {
+    xdescribe('GET /users/me', () => {
       it('sends back users data if valid token is supplied in header', async () => {
         const {data} = await axios.get(`${API_URL}/api/users/me`, {
           headers: {'Authorization': `Bearer ${token}`}
@@ -106,7 +106,7 @@ describe('API', () => {
         expect(noTokenErrResp.data).toBeTruthy();
       });
     });
-    describe('GET /users/:username/routines', () => {
+    xdescribe('GET /users/:username/routines', () => {
       it('Gets a list of public routines for a particular user.', async () => {
         const userId = 2;
         const userWithRoutines = await getUserById(userId);
@@ -117,7 +117,7 @@ describe('API', () => {
       });
     });
   });
-  describe('Activities', () => {
+  xdescribe('Activities', () => {
     let activityToCreateAndUpdate = { name: 'Bicep Curls', description: 'They hurt, but you will thank you later' };
     describe('GET /activities', () => {
       it('Just returns a list of all activities in the database', async () => {
@@ -159,7 +159,7 @@ describe('API', () => {
       });
     });
   });
-  describe('Routines', () => {
+  xdescribe('Routines', () => {
     let routineToCreateAndUpdate = {isPublic: true, name: 'Elliptical Day', goal: 'Work on that Elliptical!'};
     let routineToFail = {isPublic: false, name: 'Elliptical Day 2', goal: 'Work on that Elliptical... again!'};
     const newRoutineData = {isPublic: false, name: 'Elliptical Day Private', goal: 'Work on that Elliptical, yet again!'}
@@ -231,7 +231,7 @@ describe('API', () => {
       });
     });
   });
-  describe('routine_activities', () => {
+  xdescribe('routine_activities', () => {
     let newRoutineActivityData = {routineId: 3, activityId: 8, count: 25, duration: 200};
     describe('PATCH /routine_activities/:routineActivityId (**)', () => {
       it('Updates the count or duration on the routine activity', async () => {
