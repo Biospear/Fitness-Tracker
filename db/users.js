@@ -1,4 +1,4 @@
-const { user } = require("pg/lib/defaults");
+
 const client = require("./client");
 
 async function createUser({ username, password }) {
@@ -59,13 +59,34 @@ async function getUserById(userId) {
   }
 }
 
+// async function getUserByUsername(userName) {
+//   // first get the user
+//   try {
+//     const {rows} = await client.query(`
+//       SELECT *
+//       FROM users
+//       WHERE username = $1;
+//     `, [userName]);
+//     console.log('ROWS', rows)
+//     // if it doesn't exist, return null
+//     if (!rows || !rows.length) return null;
+//     // if it does:
+//     // delete the 'password' key from the returned object
+//     const [user] = rows;
+//     // delete user.password;
+//     return user;
+//   } catch (error) {
+//     console.error(error)
+//   }
+// }
+
 async function getUserByUsername(username) {
   try {
     const {
       rows: [user],
     } = await client.query(
       `
-        SELECT id, username, password
+        SELECT *
         FROM users
         WHERE username=$1
       `,

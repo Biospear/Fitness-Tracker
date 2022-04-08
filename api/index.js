@@ -24,7 +24,8 @@ apiRouter.get("/health", (req, res, next) => {
 });
 
 apiRouter.use((error, req, res, next) => {
-    res.send({
+    console.log('we are in our error handler')
+  res.send({
       name: error.name,
       message: error.message,
     });
