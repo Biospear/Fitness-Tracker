@@ -3,7 +3,7 @@ const usersRouter = express.Router();
 const { getUserByUsername, createUser } = require("../db");
 
 usersRouter.use((req, res, next) => {
-  console.log("A request is being made to /users");
+  // console.log("A request is being made to /users");
 
   next();
 });
@@ -13,24 +13,26 @@ usersRouter.use((req, res, next) => {
 //});
 
 usersRouter.post("/register", async (req, res, next) => {
-  console.log("A request is being made to /users/register", req.body);
 
   try {
     const { username, password } = req.body;
     const _user = await getUserByUsername(username);
-    console.log(_user, "this is the user!!!!");
     if (_user) {
+        res.status(401)
       next({
         name: "UserExistsError",
         message: "A user by that username already exists",
       });
+      
     }
 
-    if (password) {
+    if (password.length < 8) {
+        res.status(401)
       next({
-        name: "PasswordToShort",
+        name: "PasswordTooShort",
         message: "password not long enough",
       });
+      
     }
 
     const user = await createUser({
@@ -49,7 +51,7 @@ usersRouter.post("/register", async (req, res, next) => {
     //   }
     // );
 
-    res.send({ _user, message: "thank you for signing up", token });
+    res.send({ user, message: "thank you for signing up"});
   } catch ({ name, message }) {
     next({ name, message });
   }
