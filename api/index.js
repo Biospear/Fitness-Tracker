@@ -4,7 +4,9 @@
 
 const express = require("express");
 const apiRouter = express.Router();
-// require("dotenv").config();
+
+// allows this file to read from the .env
+require("dotenv").config();
 
 const usersRouter = require("./users");
 const routinesRouter = require("./routines")
