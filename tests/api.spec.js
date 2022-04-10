@@ -117,7 +117,7 @@ describe('API', () => {
       });
     });
   });
-  xdescribe('Activities', () => {
+  describe('Activities', () => {
     let activityToCreateAndUpdate = { name: 'Bicep Curls', description: 'They hurt, but you will thank you later' };
     describe('GET /activities', () => {
       it('Just returns a list of all activities in the database', async () => {

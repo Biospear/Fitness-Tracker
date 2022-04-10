@@ -58,7 +58,10 @@ apiRouter.use((req, res, next) => {
 });
 
 apiRouter.get("/health", (req, res, next) => {
-  res.send({message: "all is well"});
+  res.send({
+    name: "health",
+    message: "all is well"
+});
 });
 
 apiRouter.use("/users", usersRouter);
