@@ -41,8 +41,8 @@ activitiesRouter.patch("/:activityId", requireUser, async (req, res, next) => {
 
   const updateFields = {
         id: activityId,
-        name: name,
-        description: description
+        name,
+        description
   };
 
   try {
