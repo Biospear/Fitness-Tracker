@@ -1,6 +1,7 @@
 const express = require("express");
 const usersRouter = express.Router();
-const { getUserByUsername, createUser } = require("../db");
+const { getUserByUsername, createUser, getPublicRoutinesByUser } = require("../db");
+const { requireUser } = require("./utils");
 
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
@@ -20,12 +21,12 @@ usersRouter.post("/register", async (req, res, next) => {
     const { username, password } = req.body;
     const userAlreadyExists = await getUserByUsername(username);
 
-    console.log(
-      "this is our incoming user: ",
-      username,
-      "...this is our user check: ",
-      userAlreadyExists
-    );
+    // console.log(
+    //   "this is our incoming user: ",
+    //   username,
+    //   "...this is our user check: ",
+    //   userAlreadyExists
+    // );
 
     if (userAlreadyExists) {
       res.status(401);
@@ -83,6 +84,7 @@ usersRouter.post("/login", async (req, res, next) => {
       const token = jwt.sign({ username, id: user.id }, process.env.JWT_SECRET);
       // create token & return to user
       res.send({ message: "you're logged in!", token });
+
     } else {
       next({
         name: "IncorrectCredentialsError",
@@ -93,6 +95,26 @@ usersRouter.post("/login", async (req, res, next) => {
     console.log(error);
     next(error);
   }
+});
+
+usersRouter.get("/me", requireUser, async (req, res, next) => {
+  res.send({
+    id: req.user.id,
+    username: req.user.username
+  })
+});
+
+usersRouter.get("/:username/routines", async (req, res, next) => {
+  const username = req.params
+  try {
+    const routines = await getPublicRoutinesByUser(username);
+    console.log(routines, "this is the routines")
+
+  res.send(routines);
+
+} catch ({ name, message }) {
+  next({ name, message });
+}
 });
 
 module.exports = usersRouter;
