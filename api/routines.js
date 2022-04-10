@@ -6,6 +6,8 @@ const {
   getRoutineById,
   updateRoutine,
   destroyRoutine,
+  getRoutineActivitiesByRoutine,
+  addActivityToRoutine,
 } = require("../db");
 const { requireUser } = require("./utils");
 
@@ -82,7 +84,7 @@ routinesRouter.delete("/:routineId", requireUser, async (req, res, next) => {
 
       res.send(destroyedRoutine);
     } else {
-      // if there was a post, throw UnauthorizedUserError, otherwise throw PostNotFoundError
+      // if there was a routine, throw UnauthorizedUserError, otherwise throw RoutineNotFoundError
       next(
         routine
           ? {
@@ -90,7 +92,7 @@ routinesRouter.delete("/:routineId", requireUser, async (req, res, next) => {
               message: "You cannot delete a routine which is not yours",
             }
           : {
-              name: "PostNotFoundError",
+              name: "RoutineNotFoundError",
               message: "That routine does not exist",
             }
       );
@@ -99,5 +101,41 @@ routinesRouter.delete("/:routineId", requireUser, async (req, res, next) => {
     next({ name, message });
   }
 });
+
+routinesRouter.post(
+  "/:routineId/activities",
+  async (req, res, next) => {
+
+    const { activityId, duration, count } = req.body
+    const { routineId } = req.params
+    const fields = {
+        routineId,
+        activityId, 
+        duration, 
+        count
+    }
+    // RA_Object was written to account for the keyword "id" that is needed in the getRoutineActivities function
+    const RA_Object = {id: routineId}
+
+    try {
+        const [RA_Exists] = await getRoutineActivitiesByRoutine(RA_Object)
+
+        // checks if that routineId exists and if the activityId also matches
+        if (RA_Exists && RA_Exists.activityId === fields.activityId) {
+            res.status(401);
+            next({
+              name: "RoutineActivityExistsError",
+              message: "That RoutineActivity already exists",
+            });
+        }
+
+      const routineWithActivity = await addActivityToRoutine(fields);
+
+      res.send(routineWithActivity);
+    } catch ({ name, message }) {
+      next({ name, message });
+    }
+  }
+);
 
 module.exports = routinesRouter;

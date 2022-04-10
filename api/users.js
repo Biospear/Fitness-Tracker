@@ -10,12 +10,6 @@ const { requireUser } = require("./utils");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-usersRouter.use((req, res, next) => {
-  // console.log("A request is being made to /users");
-
-  next();
-});
-
 //usersRouter.get("/", (req, res, next) => {
 //res.send({ message: 'This is users ' });
 //});
@@ -33,13 +27,14 @@ usersRouter.post("/register", async (req, res, next) => {
     // );
 
     if (userAlreadyExists) {
+      // console.log("in user-already-exists handler")
       res.status(401);
       next({
         name: "UserExistsError",
         message: "A user by that username already exists",
       });
     }
-
+    
     if (password.length < 8) {
       res.status(401);
       next({
@@ -64,8 +59,9 @@ usersRouter.post("/register", async (req, res, next) => {
       }
     );
 
-    res.send({ user, message: "thank you for signing up" });
+    res.send({ user, message: "thank you for signing up", token });
   } catch ({ name, message }) {
+    // console.log("we're in the wrong handler", name, message)
     next({ name, message });
   }
 });

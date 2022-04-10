@@ -52,7 +52,7 @@ apiRouter.use(async (req, res, next) => {
 // check for our user
 apiRouter.use((req, res, next) => {
   if (req.user) {
-    console.log("User is set:", JSON.stringify(req.user, null, 4));
+    // console.log("User is set:", req.user);
   }
   next();
 });
