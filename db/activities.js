@@ -52,25 +52,33 @@ async function getAllActivities() {
   }
 }
 
-async function updateActivity({ id, name, description }) {
-  try {
-    const {
-      rows: [user],
-    } = await client.query(
-      `
-            UPDATE activities
-            SET name=$2,
-            description=$3
-            WHERE id=$1
-            RETURNING *;
-          `,
-      [id, name, description]
-    );
+async function updateActivity(fields = {}) {
 
-    return user;
-  } catch (error) {
-    throw error;
-  }
+  const setString = Object.keys(fields)
+  .map((key, index) => `"${key}"=$${index + 1}`)
+  .join(", ");
+  
+    // return early if this is called without fields
+    if (setString.length === 0) {
+      return;
+    }
+  
+    try {
+      const {
+        rows: [activity],
+      } = await client.query(
+        `
+          UPDATE activities
+          SET ${setString}
+          WHERE id=${fields.id}
+          RETURNING *;
+        `, Object.values(fields)
+      );
+  
+      return activity;
+    } catch (error) {
+      throw error;
+    }
 }
 
 async function attachActivitiesToRoutines(routines) {
