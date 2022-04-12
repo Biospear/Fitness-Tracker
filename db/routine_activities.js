@@ -11,6 +11,8 @@ async function getRoutineActivityById(id) {
       [id]
     );
 
+    if(!rows.length) return null
+
     return rows;
   } catch (error) {
     throw error;

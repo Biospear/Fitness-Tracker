@@ -219,6 +219,15 @@ const setString = Object.keys(fields)
 
 async function destroyRoutine(id) {
   try {
+    const { rows: [routine] } = await client.query(
+      `
+        SELECT *
+        FROM routines
+        WHERE id=$1
+        `,
+      [id]
+    );
+    
     await client.query(
       `
     DELETE
@@ -236,6 +245,7 @@ async function destroyRoutine(id) {
     `,
       [id]
     );
+    return routine
   } catch (error) {
     throw error;
   }
