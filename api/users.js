@@ -10,58 +10,48 @@ const { requireUser } = require("./utils");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-//usersRouter.get("/", (req, res, next) => {
-//res.send({ message: 'This is users ' });
-//});
-
 usersRouter.post("/register", async (req, res, next) => {
   try {
     const { username, password } = req.body;
     const userAlreadyExists = await getUserByUsername(username);
 
-    // console.log(
-    //   "this is our incoming user: ",
-    //   username,
-    //   "...this is our user check: ",
-    //   userAlreadyExists
-    // );
-
-    if (userAlreadyExists) {
-      // console.log("in user-already-exists handler")
-      res.status(401);
-      next({
-        name: "UserExistsError",
-        message: "A user by that username already exists",
-      });
-    }
-    
-    if (password.length < 8) {
-      res.status(401);
-      next({
-        name: "PasswordTooShort",
-        message: "password not long enough",
-      });
-    }
-
-    const user = await createUser({
-      username,
-      password,
-    });
-
-    const token = jwt.sign(
-      {
-        id: user.id,
+    // user must not exist and must have a password of 8 char or more
+    if (!userAlreadyExists && password.length >= 8) {
+      const user = await createUser({
         username,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1w",
-      }
-    );
+        password,
+      });
 
-    res.send({ user, message: "thank you for signing up", token });
+      const token = jwt.sign(
+        {
+          id: user.id,
+          username,
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1w",
+        }
+      );
+
+      res.send({ user, message: "thank you for signing up", token });
+    } else {
+      if (userAlreadyExists) {
+        res.status(401);
+        next({
+          name: "UserExistsError",
+          message: "A user by that username already exists",
+        });
+      }
+
+      if (password.length < 8) {
+        res.status(401);
+        next({
+          name: "PasswordTooShort",
+          message: "password not long enough",
+        });
+      }
+    }
   } catch ({ name, message }) {
-    // console.log("we're in the wrong handler", name, message)
     next({ name, message });
   }
 });

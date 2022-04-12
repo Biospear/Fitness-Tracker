@@ -102,40 +102,36 @@ routinesRouter.delete("/:routineId", requireUser, async (req, res, next) => {
   }
 });
 
-routinesRouter.post(
-  "/:routineId/activities",
-  async (req, res, next) => {
+routinesRouter.post("/:routineId/activities", async (req, res, next) => {
+  const { activityId, duration, count } = req.body;
+  const { routineId } = req.params;
+  const fields = {
+    routineId,
+    activityId,
+    duration,
+    count,
+  };
+  // RoutActObject was written to account for the keyword "id" that's needed in the getRoutineActivities function
+  const RoutActObject = { id: routineId };
 
-    const { activityId, duration, count } = req.body
-    const { routineId } = req.params
-    const fields = {
-        routineId,
-        activityId, 
-        duration, 
-        count
-    }
-    // RA_Object was written to account for the keyword "id" that is needed in the getRoutineActivities function
-    const RA_Object = {id: routineId}
+  try {
+    const [RoutActExists] = await getRoutineActivitiesByRoutine(RoutActObject);
 
-    try {
-        const [RA_Exists] = await getRoutineActivitiesByRoutine(RA_Object)
-
-        // checks if that routineId exists and if the activityId also matches
-        if (RA_Exists && RA_Exists.activityId === fields.activityId) {
-            res.status(401);
-            next({
-              name: "RoutineActivityExistsError",
-              message: "That RoutineActivity already exists",
-            });
-        }
-
+    // If that routineId doesn't exist or if the activityId doesn't match, send the created routine_activity. Otherwise, throw error
+    if (!RoutActExists || RoutActExists.activityId !== fields.activityId) {
       const routineWithActivity = await addActivityToRoutine(fields);
-
       res.send(routineWithActivity);
-    } catch ({ name, message }) {
-      next({ name, message });
+    } else {
+      res.status(401);
+      next({
+        name: "RoutineActivityExistsError",
+        message: "That RoutineActivity already exists",
+      });
     }
+  } catch ({ name, message }) {
+    console.log({ name, message });
+    next({ name, message });
   }
-);
+});
 
 module.exports = routinesRouter;

@@ -5,7 +5,6 @@ const {
   createActivity,
   updateActivity,
   getPublicRoutinesByActivity,
-  getActivityById,
 } = require("../db");
 const { requireUser } = require("./utils");
 
@@ -40,9 +39,9 @@ activitiesRouter.patch("/:activityId", requireUser, async (req, res, next) => {
   const { name, description } = req.body;
 
   const updateFields = {
-        id: activityId,
-        name,
-        description
+    id: activityId,
+    name,
+    description,
   };
 
   try {
@@ -58,8 +57,8 @@ activitiesRouter.get("/:activityId/routines", async (req, res, next) => {
   const { activityId } = req.params;
 
   const activityObj = {
-      id: activityId
-    }
+    id: activityId,
+  };
 
   try {
     const activities = await getPublicRoutinesByActivity(activityObj);

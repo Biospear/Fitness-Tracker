@@ -13,10 +13,10 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 
 const usersRouter = require("./users");
-const routinesRouter = require("./routines")
-const activitiesRouter = require("./activities")
-const routine_activitiesRouter = require("./routine_activities")
-const { getUserById } = require("../db")
+const routinesRouter = require("./routines");
+const activitiesRouter = require("./activities");
+const routineActivitiesRouter = require("./routine_activities");
+const { getUserById } = require("../db");
 
 // set `req.user` if possible
 apiRouter.use(async (req, res, next) => {
@@ -32,12 +32,10 @@ apiRouter.use(async (req, res, next) => {
     try {
       const { id } = jwt.verify(token, JWT_SECRET);
 
-
       if (id) {
         req.user = await getUserById(id);
         next();
       }
-
     } catch ({ name, message }) {
       next({ name, message });
     }
@@ -60,21 +58,22 @@ apiRouter.use((req, res, next) => {
 apiRouter.get("/health", (req, res, next) => {
   res.send({
     name: "health",
-    message: "all is well"
-});
+    message: "all is well",
+  });
 });
 
 apiRouter.use("/users", usersRouter);
-apiRouter.use("/routines", routinesRouter)
-apiRouter.use("/activities", activitiesRouter)
-apiRouter.use("/routine_activities", routine_activitiesRouter)
+apiRouter.use("/routines", routinesRouter);
+apiRouter.use("/activities", activitiesRouter);
+apiRouter.use("/routine_activities", routineActivitiesRouter);
 
 // error handler
 apiRouter.use((error, req, res, next) => {
+  // console.log("in the error handler", {error})
   res.send({
-      name: error.name,
-      message: error.message,
-    });
+    name: error.name,
+    message: error.message,
   });
+});
 
 module.exports = apiRouter;

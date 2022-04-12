@@ -1,7 +1,6 @@
 const client = require("./client");
 
 async function getRoutineActivityById(id) {
-  console.log("IN the function", id)
   try {
     const { rows } = await client.query(
       `
@@ -11,6 +10,8 @@ async function getRoutineActivityById(id) {
         `,
       [id]
     );
+
+    if(!rows.length) return null
 
     return rows;
   } catch (error) {
@@ -43,7 +44,6 @@ async function addActivityToRoutine({
 }
 
 async function updateRoutineActivity(fields = {}) {
-  console.log("in the function", fields)
   const setString = Object.keys(fields)
     .map((key, index) => `"${key}"=$${index + 1}`)
     .join(", ");
