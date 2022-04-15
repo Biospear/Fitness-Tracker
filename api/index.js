@@ -2,6 +2,8 @@
 // attach other routers from files in this api directory (users, activities...)
 // export the api router
 
+// "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsYmVydCIsImlkIjoxLCJpYXQiOjE2NTAwNDUxNzh9.TNXmxK-atqBChAOrvNbjsVaTLnIoXGK624D3sCEqiwA"
+
 const express = require("express");
 const apiRouter = express.Router();
 

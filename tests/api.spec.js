@@ -240,7 +240,7 @@ describe('API', () => {
         expect(respondedRoutineActivity.duration).toEqual(newRoutineActivityData.duration);
         routineActivityToCreateAndUpdate = respondedRoutineActivity;
       });
-      xit('Logged in user should be the owner of the modified object.', async () => {
+      it('Logged in user should be the owner of the modified object.', async () => {
         let respondedRoutineActivity, errRespondedRoutineActivity;
         try {
           respondedRoutineActivity = await axios.patch(`${API_URL}/api/routine_activities/${4}`, newRoutineActivityData, { headers: {'Authorization': `Bearer ${token}`} });
@@ -260,7 +260,7 @@ describe('API', () => {
         expect(deletedRoutineActivity.duration).toBe(routineActivityToCreateAndUpdate.duration);
         expect(shouldBeDeleted).toBeFalsy();
       });
-      xit('Logged in user should be the owner of the modified object.', async () => {
+      it('Logged in user should be the owner of the modified object.', async () => {
         let respondedRoutineActivity, errRespondedRoutineActivity;
         try {
           respondedRoutineActivity = await axios.delete(`${API_URL}/api/routine_activities/${4}`, { headers: {'Authorization': `Bearer ${token}`} });
